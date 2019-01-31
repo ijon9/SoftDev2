@@ -25,7 +25,7 @@ var toggleState = function(e) {
     }
 };
 
-var getMousePos = function(evt) {
+var getMousePos = function(evt) { //Same result as evt.offsetX and evt.offsetY
     var rect = c.getBoundingClientRect();
     return {
       x: evt.clientX - rect.left,
