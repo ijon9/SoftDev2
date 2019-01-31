@@ -1,3 +1,8 @@
+// Isaac Jon
+// SoftDev2 pd7
+// K00 - I See a Red Door
+// 2019-01-31
+
 const c = document.getElementById("slate");
 const ctx = c.getContext("2d");
 var drawState = false //false is box, true is dot
