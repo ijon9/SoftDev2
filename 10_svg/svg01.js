@@ -9,7 +9,10 @@ var has_drawing = false;
 
 var pic = document.getElementById("vimage");
 var butClear = document.getElementById("but_clear");
+var ctag = document.getElementsByTagName("circle")
 
+
+// ctag.addEventListener("mousedown", alter())
 pic.addEventListener("mousedown", drawCircle)
 butClear.addEventListener("click", function(e){
 	if (has_drawing){
@@ -23,25 +26,57 @@ butClear.addEventListener("click", function(e){
 	}
 });
 
+//Adds circle at location
+function placeCircle(x, y) {
+	var c = document.createElementNS(svgURL, "circle");
+  c.setAttribute("cx", x);
+  c.setAttribute("cy", y);
+  c.setAttribute("r", 20);
+  c.setAttribute("fill", "blue");
+  c.setAttribute("stroke", "black");
+	c.setAttribute("clickCounter", 0)
+  pic.appendChild(c);
+}
+
 // This code draws a red circle in the middle of the screen
 function drawCircle(e) {
   has_drawing = true;
 	var rect = pic.getBoundingClientRect();
   var x = e.clientX - rect.left;
   var y = e.clientY - rect.top;
-	//If click location is on a circle. If the color of the circle is green, delete it and make one at a random location
-	
-	//Otherwise, make a circle at that spot
-  var c = document.createElementNS(svgURL, "circle");
-  c.setAttribute("cx", x);
-  c.setAttribute("cy", y);
-  c.setAttribute("r", 20);
-  c.setAttribute("fill", "blue");
-  c.setAttribute("stroke", "black");
-	c.style.pointerEvents = "none";
-  pic.appendChild(c);
+	var circle = circleAt(x,y)
+	// If there is a circle at the point, ask if it is green. If it is green, delete it and add a random circle. if it is blue, turn it green.
+  if(circleAt(x, y)) {
+		if(isGreen(circle)) {
+			pic.removeChild(circle)
+			placeCircle(Math.random()*500, Math.random()*500)
+		}
+		else {
+			circle.setAttribute("fill", "green")
+		}
+  }
+	else {
+		placeCircle(x, y)
+	}
 }
-// =============================
+
+function circleAt(x, y) {
+	for(i=pic.children.length-1; i >= 0; i--) {
+		circ = pic.children[i]
+		circX = circ.getAttribute("cx")
+		circY = circ.getAttribute("cy")
+		circR = circ.getAttribute("r")
+		if (Math.hypot(circX - x, circY - y) < circR) {
+			return circ
+		}
+	}
+	return false
+}
+
+function isGreen(circle) {
+	cColor = circle.getAttribute("fill")
+	return cColor == "green";
+}
 
 // Clears svg
 function clear(e) {
@@ -53,6 +88,3 @@ function clear(e) {
   last_xcor = null;
   last_ycor = null;
 }
-// =============================
-
-console.log(pic.children)
