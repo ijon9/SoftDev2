@@ -1,7 +1,7 @@
-//Isaac Jon
-//SoftDev2 Pd7
-//K09 -- Connect the Dots
-//2019-03-13
+// Isaac Jon
+// SoftDev2 pd7
+// K10 -- Ask Circles [Change || Die]
+// 2019-03-14
 
 const svgURL = "http://www.w3.org/2000/svg"
 
@@ -34,8 +34,20 @@ function placeCircle(x, y) {
   c.setAttribute("r", 20);
   c.setAttribute("fill", "blue");
   c.setAttribute("stroke", "black");
-	c.setAttribute("clickCounter", 0)
+	c.setAttribute("clickCounter", 0);
+  c.addEventListener("click", alter)
   pic.appendChild(c);
+}
+
+//Makes Circle bigger
+function alter(e) {
+  if(this.getAttribute("fill") == "blue") {
+    this.setAttribute("fill", "green")
+  }
+  else {
+    pic.removeChild(this)
+    placeCircle(Math.random()*500, Math.random()*500)
+  }
 }
 
 // This code draws a red circle in the middle of the screen
@@ -46,18 +58,9 @@ function drawCircle(e) {
   var y = e.clientY - rect.top;
 	var circle = circleAt(x,y)
 	// If there is a circle at the point, ask if it is green. If it is green, delete it and add a random circle. if it is blue, turn it green.
-  if(circleAt(x, y)) {
-		if(isGreen(circle)) {
-			pic.removeChild(circle)
-			placeCircle(Math.random()*500, Math.random()*500)
-		}
-		else {
-			circle.setAttribute("fill", "green")
-		}
+  if (!circleAt(x,y)) {
+    placeCircle(x, y)
   }
-	else {
-		placeCircle(x, y)
-	}
 }
 
 function circleAt(x, y) {
@@ -67,7 +70,7 @@ function circleAt(x, y) {
 		circY = circ.getAttribute("cy")
 		circR = circ.getAttribute("r")
 		if (Math.hypot(circX - x, circY - y) < circR) {
-			return circ
+			return true
 		}
 	}
 	return false
