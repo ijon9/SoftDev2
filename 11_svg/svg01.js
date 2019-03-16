@@ -5,16 +5,24 @@
 
 const svgURL = "http://www.w3.org/2000/svg"
 
+//States
+//===========================
 var has_drawing = false;
+var moving = false;
+//===========================
 
+//Buttons
+//===========================
 var pic = document.getElementById("vimage");
 var butClear = document.getElementById("but_clear");
 var ctag = document.getElementsByTagName("circle")
 var butMove = document.getElementById("but_move");
+//===========================
 
-
-// ctag.addEventListener("mousedown", alter())
+//Event Listeners
+//===========================
 pic.addEventListener("mousedown", drawCircle)
+
 butClear.addEventListener("click", function(e){
 	if (has_drawing){
 		//clears the canvas when user writes on it
@@ -26,11 +34,42 @@ butClear.addEventListener("click", function(e){
 		e.preventDefault();
 	}
 });
-butMove.addEventListener("click", move);
+
+butMove.addEventListener("click", function() {
+	if(!moving) {
+		moving = true;
+		move()
+	}
+});
+//===========================
 
 //Sets circles into motion
 function move(e) {
-	//
+	//Goes through each circle
+	for(i=0; i<pic.children.length; i++) {
+		pic.children[i].setAttribute("state", "moving");
+		step(pic.children[i])
+	}
+	window.requestAnimationFrame(move)
+}
+
+//Step function for circles
+function step(circ) {
+	xVel = parseFloat(circ.getAttribute("vx"))
+	yVel = parseFloat(circ.getAttribute("vy"))
+	xPos = parseFloat(circ.getAttribute("cx"))
+	yPos = parseFloat(circ.getAttribute("cy"))
+	if(xPos + xVel > 500 || xPos + xVel < 0) {
+		xVel *= -1
+		circ.setAttribute("vx", xVel)
+	}
+	if(yPos + yVel > 500 || yPos + yVel < 0) {
+		yVel *= -1
+		circ.setAttribute("vy", yVel)
+	}
+	circ.setAttribute("cx", xPos + xVel)
+	circ.setAttribute("cy", yPos + yVel)
+	// console.log("x location: " + circ.getAttribute("cx"))
 }
 
 //Makes Circle bigger
@@ -62,7 +101,9 @@ function placeCircle(x, y) {
 	var c = document.createElementNS(svgURL, "circle");
   c.setAttribute("cx", x);
   c.setAttribute("cy", y);
-  c.setAttribute("r", 20);
+	c.setAttribute("r", 20);
+	c.setAttribute("vx", 2)
+	c.setAttribute("vy", 2)
   c.setAttribute("fill", "blue");
   c.setAttribute("stroke", "black");
 	c.setAttribute("clickCounter", 0);
