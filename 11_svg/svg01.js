@@ -75,16 +75,38 @@ function spiralStep(circ) {
 	theta = parseFloat(circ.getAttribute("theta"));
 	xPos = parseFloat(circ.getAttribute("cx"));
 	yPos = parseFloat(circ.getAttribute("cy"));
+	dTheta = 0.1
+	rad = 7
 
 	if(theta > 2 * Math.PI) {
 		circ.setAttribute("theta", 0);
 	}
 	else {
-		circ.setAttribute("theta", theta + 0.1);
+		circ.setAttribute("theta", theta + dTheta);
 	}
 
-	circ.setAttribute("cx", xPos + 2 * Math.cos(theta))
-	circ.setAttribute("cy", yPos + 2 * Math.sin(theta))
+	displayCircle(circ, xPos + rad * Math.cos(theta), yPos + rad * Math.sin(theta));
+}
+
+//Displays circle
+function displayCircle(circ, xPos, yPos) {
+	if(xPos > 500) {
+		displayCircle(circ, 500, yPos);
+	}
+	else if(xPos < 0) {
+		displayCircle(circ, 0, yPos);
+	}
+	else if(yPos > 500) {
+		displayCircle(circ, xPos, 500);
+	}
+	else if(yPos < 0) {
+		displayCircle(circ, xPos, 0);
+	}
+	else {
+		circ.setAttribute("cx", xPos);
+		circ.setAttribute("cy", yPos);
+	}
+
 }
 
 //Step function for circles
@@ -101,8 +123,8 @@ function step(circ) {
 	if(yPos + yVel > 500 || yPos + yVel < 0) {
 		circ.setAttribute("vy", yVel);
 	}
-	circ.setAttribute("cx", xPos + xVel);
-	circ.setAttribute("cy", yPos + yVel);
+
+	displayCircle(circ, xPos + xVel, yPos + yVel);
 	// console.log("x location: " + circ.getAttribute("cx"))
 }
 
