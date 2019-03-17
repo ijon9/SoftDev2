@@ -1,7 +1,7 @@
 // Isaac Jon
 // SoftDev2 pd7
-// K10 -- Ask Circles [Change || Die]
-// 2019-03-14
+// K11 -- Ask Circles [Change || Die] ...While On The Go
+// 2019-03-18
 
 const svgURL = "http://www.w3.org/2000/svg"
 
@@ -9,6 +9,7 @@ const svgURL = "http://www.w3.org/2000/svg"
 //===========================
 var has_drawing = false;
 var moving = false;
+var spiraling = false;
 //===========================
 
 //Buttons
@@ -17,6 +18,7 @@ var pic = document.getElementById("vimage");
 var butClear = document.getElementById("but_clear");
 var ctag = document.getElementsByTagName("circle")
 var butMove = document.getElementById("but_move");
+var butSpiral = document.getElementById("but_spiral");
 //===========================
 
 //Event Listeners
@@ -38,37 +40,69 @@ butClear.addEventListener("click", function(e){
 butMove.addEventListener("click", function() {
 	if(!moving) {
 		moving = true;
-		move()
+		move();
 	}
 });
+
+butSpiral.addEventListener("click", function() {
+	if(!spiraling) {
+		spiraling = true;
+		spiral();
+	}
+})
 //===========================
 
 //Sets circles into motion
 function move(e) {
 	//Goes through each circle
 	for(i=0; i<pic.children.length; i++) {
-		pic.children[i].setAttribute("state", "moving");
-		step(pic.children[i])
+		step(pic.children[i]);
 	}
-	window.requestAnimationFrame(move)
+	window.requestAnimationFrame(move);
+}
+
+//Makes circles move in a circular motion
+function spiral(e) {
+	//Goes through each circle
+	for(i=0; i<pic.children.length; i++) {
+		spiralStep(pic.children[i]);
+	}
+	window.requestAnimationFrame(spiral);
+}
+
+//Spiral step function for circles
+function spiralStep(circ) {
+	theta = parseFloat(circ.getAttribute("theta"));
+	xPos = parseFloat(circ.getAttribute("cx"));
+	yPos = parseFloat(circ.getAttribute("cy"));
+
+	if(theta > 2 * Math.PI) {
+		circ.setAttribute("theta", 0);
+	}
+	else {
+		circ.setAttribute("theta", theta + 0.1);
+	}
+
+	circ.setAttribute("cx", xPos + 2 * Math.cos(theta))
+	circ.setAttribute("cy", yPos + 2 * Math.sin(theta))
 }
 
 //Step function for circles
 function step(circ) {
-	xVel = parseFloat(circ.getAttribute("vx"))
-	yVel = parseFloat(circ.getAttribute("vy"))
-	xPos = parseFloat(circ.getAttribute("cx"))
-	yPos = parseFloat(circ.getAttribute("cy"))
+	xVel = parseFloat(circ.getAttribute("vx"));
+	yVel = parseFloat(circ.getAttribute("vy"));
+	xPos = parseFloat(circ.getAttribute("cx"));
+	yPos = parseFloat(circ.getAttribute("cy"));
 	if(xPos + xVel > 500 || xPos + xVel < 0) {
-		xVel *= -1
-		circ.setAttribute("vx", xVel)
+		xVel *= -1;
+		circ.setAttribute("vx", xVel);
 	}
+	yVel *= -1
 	if(yPos + yVel > 500 || yPos + yVel < 0) {
-		yVel *= -1
-		circ.setAttribute("vy", yVel)
+		circ.setAttribute("vy", yVel);
 	}
-	circ.setAttribute("cx", xPos + xVel)
-	circ.setAttribute("cy", yPos + yVel)
+	circ.setAttribute("cx", xPos + xVel);
+	circ.setAttribute("cy", yPos + yVel);
 	// console.log("x location: " + circ.getAttribute("cx"))
 }
 
@@ -102,8 +136,9 @@ function placeCircle(x, y) {
   c.setAttribute("cx", x);
   c.setAttribute("cy", y);
 	c.setAttribute("r", 20);
-	c.setAttribute("vx", 2)
-	c.setAttribute("vy", 2)
+	c.setAttribute("vx", 2);
+	c.setAttribute("vy", 2);
+	c.setAttribute("theta", 0);
   c.setAttribute("fill", "blue");
   c.setAttribute("stroke", "black");
 	c.setAttribute("clickCounter", 0);
