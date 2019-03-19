@@ -1,20 +1,30 @@
 // Isaac Jon
 // SoftDev2 pd7
-// K10 -- Ask Circles [Change || Die]
-// 2019-03-14
+// K11 -- Ask Circles [Change || Die] ...While On The Go
+// 2019-03-18
 
 const svgURL = "http://www.w3.org/2000/svg"
 
+//States
+//===========================
 var has_drawing = false;
+var moving = false;
+var spiraling = false;
+//===========================
 
+//Buttons
+//===========================
 var pic = document.getElementById("vimage");
 var butClear = document.getElementById("but_clear");
 var ctag = document.getElementsByTagName("circle")
 var butMove = document.getElementById("but_move");
+var butSpiral = document.getElementById("but_spiral");
+//===========================
 
-
-// ctag.addEventListener("mousedown", alter())
+//Event Listeners
+//===========================
 pic.addEventListener("mousedown", drawCircle)
+
 butClear.addEventListener("click", function(e){
 	if (has_drawing){
 		//clears the canvas when user writes on it
@@ -26,11 +36,96 @@ butClear.addEventListener("click", function(e){
 		e.preventDefault();
 	}
 });
-butMove.addEventListener("click", move);
+
+butMove.addEventListener("click", function() {
+	if(!moving) {
+		moving = true;
+		move();
+	}
+});
+
+butSpiral.addEventListener("click", function() {
+	if(!spiraling) {
+		spiraling = true;
+		spiral();
+	}
+})
+//===========================
 
 //Sets circles into motion
 function move(e) {
-	//
+	//Goes through each circle
+	for(i=0; i<pic.children.length; i++) {
+		step(pic.children[i]);
+	}
+	window.requestAnimationFrame(move);
+}
+
+//Makes circles move in a circular motion
+function spiral(e) {
+	//Goes through each circle
+	for(i=0; i<pic.children.length; i++) {
+		spiralStep(pic.children[i]);
+	}
+	window.requestAnimationFrame(spiral);
+}
+
+//Spiral step function for circles
+function spiralStep(circ) {
+	theta = parseFloat(circ.getAttribute("theta"));
+	xPos = parseFloat(circ.getAttribute("cx"));
+	yPos = parseFloat(circ.getAttribute("cy"));
+	dTheta = 0.1
+	rad = 7
+
+	if(theta > 2 * Math.PI) {
+		circ.setAttribute("theta", 0);
+	}
+	else {
+		circ.setAttribute("theta", theta + dTheta);
+	}
+
+	displayCircle(circ, xPos + rad * Math.cos(theta), yPos + rad * Math.sin(theta));
+}
+
+//Displays circle
+function displayCircle(circ, xPos, yPos) {
+	if(xPos > 500) {
+		displayCircle(circ, 500, yPos);
+	}
+	else if(xPos < 0) {
+		displayCircle(circ, 0, yPos);
+	}
+	else if(yPos > 500) {
+		displayCircle(circ, xPos, 500);
+	}
+	else if(yPos < 0) {
+		displayCircle(circ, xPos, 0);
+	}
+	else {
+		circ.setAttribute("cx", xPos);
+		circ.setAttribute("cy", yPos);
+	}
+
+}
+
+//Step function for circles
+function step(circ) {
+	xVel = parseFloat(circ.getAttribute("vx"));
+	yVel = parseFloat(circ.getAttribute("vy"));
+	xPos = parseFloat(circ.getAttribute("cx"));
+	yPos = parseFloat(circ.getAttribute("cy"));
+	if(xPos + xVel > 500 || xPos + xVel < 0) {
+		xVel *= -1;
+		circ.setAttribute("vx", xVel);
+	}
+	yVel *= -1
+	if(yPos + yVel > 500 || yPos + yVel < 0) {
+		circ.setAttribute("vy", yVel);
+	}
+
+	displayCircle(circ, xPos + xVel, yPos + yVel);
+	// console.log("x location: " + circ.getAttribute("cx"))
 }
 
 //Makes Circle bigger
@@ -62,7 +157,10 @@ function placeCircle(x, y) {
 	var c = document.createElementNS(svgURL, "circle");
   c.setAttribute("cx", x);
   c.setAttribute("cy", y);
-  c.setAttribute("r", 20);
+	c.setAttribute("r", 20);
+	c.setAttribute("vx", 2);
+	c.setAttribute("vy", 2);
+	c.setAttribute("theta", 0);
   c.setAttribute("fill", "blue");
   c.setAttribute("stroke", "black");
 	c.setAttribute("clickCounter", 0);
