@@ -43,7 +43,6 @@ print(primes)
 print(composites)
 
 l = [2,3,5,7]
-#composites = [x * c if x * c <= 100 else 0 for x in l for c in range(2,50)]
 composites1 = [x*c for x in l for c in range(2,50) if x * c <= 100]
 composites1 = list(set(composites1))
 print(composites1)
@@ -56,6 +55,7 @@ def getDivisors(num):
         if num % x == 0:
             l.append(x)
     return l
+
 def getDivisors2(num):
     return [x for x in range(1,num+1) if num %x == 0 ]
 print(getDivisors(10))
