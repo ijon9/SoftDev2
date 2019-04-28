@@ -15,7 +15,9 @@ from functools import reduce
 # * Most frequently occurring word
 
 listOfWords = open("text.txt", "r").read().split()
-test = ["a", "a", "b", "b", "b", "c", "c", "c", "c"]
+listOfWords = [w.lower().strip() for w in listOfWords]
+# print(listOfWords[0:150])
+test = ["a", "a", "b", "b", "b", "c", "c", "a", "b", "b", "c", "c", "a", "b", "b"]
 
 #Completed
 #==========================================================================
@@ -42,4 +44,15 @@ def mostFrequentWord(list):
 
 # print(mostFrequentWord(listOfWords))
 # print(mostFrequentWord(test))
+
+def wordGroupFrequency(wordGroup, list):
+    wordGroupList = wordGroup.lower().split()
+    numWords = len(wordGroupList)
+    l = [1 for x in range(len(list)) if wordGroupList == list[x: x+numWords]]
+    if len(l) == 0:
+        return 0
+    return reduce((lambda x,y: x+y), l)
+
+# print(wordGroupFrequency("a b b", test))
+print(wordGroupFrequency("the most", listOfWords))
 #==========================================================================
